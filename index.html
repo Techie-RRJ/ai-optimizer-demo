@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Optimizer — Tokenomics Assessment &amp; AI Workflow Cost Calculator — Rhonda Johnson</title>
+<style>
+:root{--ink:#14213d;--muted:#4a5568;--bg:#f5f7fb;--card:#fff;--line:#d9dee8;--brand:#1f4e9c;--brand2:#0d7c86;--good:#137a3a;--bad:#b3261e;--warn:#a15c00;--chip:#eef2fa}
+*{box-sizing:border-box}
+html{font-size:20px}
+body{margin:0;font-family:"Segoe UI",Calibri,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.4}
+header{background:linear-gradient(90deg,#14213d,#1f4e9c);color:#fff;padding:18px 28px 14px}
+header h1{margin:0;font-size:1.55rem;letter-spacing:.2px}
+header .sub{font-size:.9rem;opacity:.92;margin-top:4px}
+.badge{display:inline-block;background:#ffd166;color:#14213d;font-weight:700;border-radius:6px;padding:2px 10px;font-size:.75rem;margin-left:8px;vertical-align:middle}
+nav{display:flex;gap:6px;background:#e7ecf6;padding:8px 20px;flex-wrap:wrap;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}
+nav button{font:inherit;font-size:.92rem;border:0;background:transparent;padding:9px 16px;border-radius:8px;cursor:pointer;color:var(--ink);font-weight:600}
+nav button.active{background:var(--brand);color:#fff}
+nav button.hl{outline:3px solid #ffd166}
+main{padding:20px 28px 40px;max-width:1500px;margin:0 auto}
+section{display:none}section.active{display:block}
+h2{font-size:1.35rem;margin:.2rem 0 .4rem}
+h3{font-size:1.08rem;margin:.8rem 0 .4rem}
+p.lead{font-size:1rem;color:var(--muted);margin:.2rem 0 1rem;max-width:1200px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.sample{display:inline-block;background:#fff3cd;color:#6b4e00;border:1px solid #e9c46a;border-radius:6px;padding:2px 10px;font-size:.78rem;font-weight:700}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top}
+th{background:#f0f3f9;font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.big{font-size:1.6rem;font-weight:800}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:8px 0 14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .l{font-size:.8rem;color:var(--muted);font-weight:600}
+.kpi .v{font-size:1.5rem;font-weight:800;margin-top:2px}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+select,input{font:inherit;font-size:.9rem;padding:6px 8px;border:1px solid #b9c2d3;border-radius:8px;background:#fff;color:var(--ink)}
+input[type=number]{width:120px}
+label{font-weight:600;font-size:.85rem}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.row>div{display:flex;flex-direction:column;gap:4px}
+.tip{display:inline-block;width:20px;height:20px;line-height:20px;border-radius:50%;background:var(--brand2);color:#fff;font-size:.7rem;text-align:center;cursor:help;position:relative;font-weight:700;margin-left:4px;vertical-align:middle}
+.tip:hover::after,.tip:focus::after{content:attr(data-tip);position:absolute;left:24px;top:-6px;width:340px;background:#14213d;color:#fff;font-size:.78rem;font-weight:400;line-height:1.35;padding:10px 12px;border-radius:8px;z-index:20;text-align:left;white-space:normal;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 10px;margin:2px 3px 2px 0;font-size:.76rem}
+.chip.g{background:#e3f5e8;color:var(--good)}.chip.r{background:#fbe5e3;color:var(--bad)}.chip.y{background:#fff1d6;color:var(--warn)}
+.grid5{display:grid;grid-template-columns:190px repeat(var(--ncol,7),minmax(0,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;font-size:.84rem}
+.grid5>div{padding:8px 9px;border-bottom:1px solid var(--line);border-left:1px solid var(--line)}
+.grid5 .hd{background:#f0f3f9;font-weight:700}
+.grid5 .rl{font-weight:700;background:#fafbfe;border-left:0}
+.grid5 .cur{background:#eef5ff}
+.provname{font-size:.95rem;font-weight:800}
+.pill{display:inline-block;font-size:.7rem;font-weight:700;border-radius:6px;padding:1px 7px;background:#14213d;color:#fff}
+.bar{display:flex;height:30px;border-radius:6px;overflow:hidden;background:#eef1f6;margin:4px 0}
+.bar span{display:block;height:100%}
+.legend span{display:inline-block;margin-right:14px;font-size:.8rem}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.seg-tok{background:#1f4e9c}.seg-cmp{background:#0d7c86}.seg-ppl{background:#e09f3e}.seg-gov{background:#7b5ea7}.seg-idl{background:#9aa5b8}
+.btns button{font:inherit;font-size:.85rem;border:1px solid var(--brand);background:#fff;color:var(--brand);padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:600;margin-right:6px}
+.btns button.on{background:var(--brand);color:#fff}
+.finding{display:grid;grid-template-columns:44px 1fr 220px;gap:12px;align-items:start;border-bottom:1px solid var(--line);padding:12px 0}
+.finding .ic{font-size:1.5rem;text-align:center}
+.finding .sv{text-align:right;font-weight:800;font-size:1.15rem}
+.score{width:170px;height:170px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:800;border:12px solid #e09f3e;background:#fff}
+.score .n{font-size:2.6rem}
+.phase{border-left:6px solid var(--brand);padding:8px 14px;margin:10px 0;background:#fff;border-radius:8px}
+.note{font-size:.78rem;color:var(--muted)}
+footer{font-size:.75rem;color:var(--muted);text-align:center;padding:14px}
+a{color:var(--brand)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:1100px){.two{grid-template-columns:1fr}.grid5{grid-template-columns:150px repeat(var(--ncol,7),minmax(150px,1fr));overflow-x:auto}}
+.pdfbtn{font:inherit;font-size:.8rem;border:0;background:#137a3a;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;margin-left:12px;vertical-align:middle}
+.eng{border-top:6px solid var(--brand)}
+.eng3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:1100px){.eng3{grid-template-columns:1fr}.csum{grid-template-columns:1fr 1fr!important}}
+.ep{margin:0;border:1px solid var(--line);border-left:6px solid var(--brand)}
+.ep .pn{display:inline-block;background:var(--brand);color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:6px}
+.ep b{font-size:1.05rem}.ep .pd{margin:6px 0;font-size:.92rem}.ep ul{margin:6px 0 6px 18px;padding:0;font-size:.88rem}
+.gantt{margin:4px 0 8px}.gr{display:grid;grid-template-columns:190px 1fr;align-items:center;gap:10px;margin:5px 0}.gr>span{font-size:.85rem;font-weight:700}
+.gt{position:relative;height:28px;background:#eef2fa;border-radius:6px}.gb{position:absolute;top:0;bottom:0;border-radius:6px;color:#fff;font-size:.78rem;font-weight:700;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.gon{background-image:linear-gradient(90deg,transparent 70%,rgba(255,255,255,.25))!important}
+.gw{background:none;height:auto;display:grid;grid-template-columns:repeat(16,1fr)}.gw i{font-style:normal;font-size:.68rem;color:var(--muted);text-align:left;border-left:1px solid var(--line);padding-left:2px}
+.csum{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.ctab{width:100%;border-collapse:collapse}.ctab th{text-align:left;width:210px;vertical-align:top;padding:7px 10px;background:#f5f7fb;border-bottom:1px solid var(--line);font-size:.88rem}.ctab td{padding:7px 10px;border-bottom:1px solid var(--line);font-size:.9rem}
+#printArea .eng3{grid-template-columns:repeat(3,1fr)}#printArea .csum{grid-template-columns:repeat(4,1fr)}#printArea .eng{page-break-inside:auto}#printArea .ep,#printArea .gantt,#printArea .csum{page-break-inside:avoid}
+.rbar{position:relative;height:26px;background:#eef2fa;border-radius:6px;overflow:hidden}.rbar .f{position:absolute;top:0;bottom:0;left:0;border-radius:6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rbar .lo{background:var(--good)}.rbar .hi{background:rgba(19,122,58,.35)}.rbar .m12{position:absolute;top:-2px;bottom:-2px;width:0;border-left:2px dashed var(--bad)}
+.rtab{width:100%;border-collapse:collapse;margin:6px 0 12px}.rtab th,.rtab td{padding:7px 10px;border-bottom:1px solid var(--line);font-size:.9rem;vertical-align:middle}.rtab th{background:#f5f7fb;text-align:left}
+.emptystate{text-align:center;padding:48px 24px;max-width:900px;margin:30px auto}.emptystate .ei{font-size:2.6rem}.emptystate .et{font-size:1.25rem;font-weight:700;margin:10px 0}
+.nodata{padding:28px;text-align:center;color:var(--muted);font-size:1rem}
+#printArea{display:none}
+@page{size:Letter;margin:0.55in}
+@media print{html{font-size:11pt}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}body{background:#fff}body>*:not(#printArea){display:none!important}#printArea{display:block!important;color:#000}
+#printArea h1{font-size:16pt;margin:0 0 4pt}#printArea table{font-size:9pt;page-break-inside:auto}#printArea tr{page-break-inside:avoid}#printArea th,#printArea td{padding:4pt 5pt}
+#printArea .fn{font-size:8pt;color:#333}#printArea .note{font-size:7.5pt}.tip{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>AI Optimizer <span style="font-weight:500;font-size:.75em">· Tokenomics Assessment &amp; AI Workflow Cost Calculator</span> <span class="badge">Sample data — fictional company</span></h1>
+  <div class="sub">Prepared by Rhonda Johnson for WWT discussion · Nov 2026 · An independent concept demo, not a WWT product · Model prices from official pricing pages (see Sources)</div>
+</header>
+<div id="priceHdr" style="background:#fff3cd;color:#14213d;padding:6px 28px;font-size:.85rem;font-weight:600"></div>
+<nav id="nav">
+  <button data-s="read">1 · Preliminary Findings</button>
+  <button data-s="find">2 · Optimization Recommendations</button>
+  <button data-s="inv">3 · AI Inventory</button>
+  <button data-s="sw" class="hl">4 · Switch Providers ★</button>
+  <button data-s="calc">5 · Model Calculator</button>
+  <button data-s="src">6 · Sources &amp; Assumptions</button>
+</nav>
+<main>
+
+<!-- 1 FINDINGS -->
+<section id="read">
+  <h2>1 · Preliminary Findings <span class="sample">Sample data</span> <button class="pdfbtn" data-v="read">Export to PDF</button></h2>
+  <div id="readEmpty" class="card emptystate" style="display:none">
+    <div class="ei">📋</div>
+    <p class="et">Input data in the <a href="#inv" data-go="inv">3 · AI Inventory</a> tab in order to show your preliminary findings report.</p>
+    <p class="note" style="font-size:.9rem">The preliminary findings report (score, savings, Risks, Recommended Engagement and cost recovery) is computed from the workflows in the AI Inventory, priced with the editable assumptions in <a href="#src" data-go="src">6 · Sources &amp; Assumptions</a>. To bring back the sample company, use <b>Reload sample data</b> on the AI Inventory tab.</p>
+    <div class="btns" style="margin-top:10px"><button data-go="inv">Go to 3 · AI Inventory</button><button class="reloadSample">Reload sample data</button></div>
+  </div>
+  <div id="readReport">
+    <div class="orgbanner" style="background:#12355b;color:#fff;border-radius:10px;padding:16px 22px;margin:4px 0 16px"><div style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;opacity:.85">Preliminary findings report for</div><div style="font-size:2rem;font-weight:800;line-height:1.2">Larkspur Meridian Freight Group</div><div style="font-size:.85rem;opacity:.85">Fictional sample company · illustrative data</div></div>
+  <div class="card" style="display:flex;gap:28px;align-items:center;flex-wrap:wrap">
+    <div class="score"><div class="n" id="scoreN">–</div><div style="font-size:.8rem">of 100</div></div>
+    <div style="flex:1;min-width:380px">
+      <div style="font-size:1.1rem;font-weight:800">Tokenomics maturity score<span class="tip" tabindex="0" data-tip="Starts at 100. Minus 8 for each cost finding, minus 5 for each identity or ownership risk. Illustrative scoring for a demo, not an industry standard.">i</span></div>
+      <div class="kpis" id="readKpis" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card"><h3>Top 3 savings</h3><table id="top3"></table></div>
+    <div class="card"><h3>Risks to remediate</h3><table id="riskList"></table></div>
+  </div>
+  <div class="card eng" id="engage">
+    <h3 style="font-size:1.3rem;margin-top:0">Recommended Engagement <span class="sample">Proposed · illustrative estimate, to be finalized in SOW</span></h3>
+    <p class="lead" style="margin-bottom:.6rem"><b>The risks and savings above become this engagement.</b> Three fixed-fee phases, each with a go / no-go gate, so the client pays for one phase at a time and sees results before committing to the next.</p>
+    <div class="eng3">
+      <div class="phase ep"><div class="pn">Phase 1</div><b>Assess</b><div class="pd">2–3 weeks · <b>$50,000–$80,000</b> fixed</div>
+        <ul><li>AI inventory: up to 10 workflows depending on complexity</li><li>Cost tagging and cost per completed task baseline</li><li>Total Cost of AI (TCA) findings report with the savings and risks above, validated on client data</li></ul><div class="note">Visualize and attribute before adding endpoints.</div></div>
+      <div class="phase ep" style="border-color:var(--brand2)"><div class="pn" style="background:var(--brand2)">Phase 2</div><b>Optimize</b><div class="pd">4–6 weeks · <b>$100,000–$175,000</b> fixed</div>
+        <ul><li>Right-size models and route easy steps to smaller ones</li><li>Prompt caching and batch where they fit</li><li>Move non-AI steps to plain automation</li><li>Provider switches validated with evals (portfolio approach)</li></ul><div class="note">Delivers the savings shown in Optimization Recommendations.</div></div>
+      <div class="phase ep" style="border-color:#7b5ea7"><div class="pn" style="background:#7b5ea7">Phase 3</div><b>Govern &amp; Run</b><div class="pd">Ongoing · <b>$20,000–$35,000 / month</b> retainer</div>
+        <ul><li>Agent identity and a named owner for every agent</li><li>Token budgets and kill switches</li><li>Observability and audit evidence</li><li>Monthly TCA review tied to business outcomes</li></ul><div class="note">Closes the risks above and keeps them closed.</div></div>
+    </div>
+    <h3>Timeline</h3>
+    <div class="gantt">
+      <div class="gr"><span>Phase 1 · Assess</span><div class="gt"><div class="gb" style="left:0;width:18.75%;background:var(--brand)">Wk 1–3</div></div></div>
+      <div class="gr"><span>Phase 2 · Optimize</span><div class="gt"><div class="gb" style="left:18.75%;width:37.5%;background:var(--brand2)">Wk 4–9</div></div></div>
+      <div class="gr"><span>Phase 3 · Govern &amp; Run</span><div class="gt"><div class="gb gon" style="left:56.25%;width:43.75%;background:#7b5ea7">Wk 10 onward (monthly) →</div></div></div>
+      <div class="gr"><span></span><div class="gt gw"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i><i>10</i><i>11</i><i>12</i><i>13</i><i>14</i><i>15</i><i>16</i></div></div>
+      <p class="note">Bars show the longer end of each range. Phase gates at the end of weeks 3 and 9.</p>
+    </div>
+    <h3>Contract summary</h3>
+    <div class="csum">
+      <div class="kpi"><div class="l">Total fixed fee (Phases 1–2)</div><div class="v">$150,000–$255,000</div></div>
+      <div class="kpi"><div class="l">Duration to steady state</div><div class="v">6–9 weeks</div><div class="note">then Govern &amp; Run, monthly</div></div>
+      <div class="kpi"><div class="l">Ongoing retainer (Phase 3)</div><div class="v">$20K–$35K / mo</div></div>
+      <div class="kpi"><div class="l">Estimated annual savings identified</div><div class="v good" id="engSave">–</div><div class="note" id="engPay"></div></div>
+    </div>
+    <table class="ctab">
+      <tr><th>Fee structure</th><td>Fixed fee per phase with phase gates. The client approves each phase before it starts; Phase 3 is a monthly retainer.</td></tr>
+      <tr><th>Payment milestones</th><td>Phase 1: 50% at kickoff, 50% at findings report acceptance. Phase 2: 50% at the phase gate, 50% at sign-off. Phase 3: billed monthly.</td></tr>
+      <tr><th>What's included</th><td>AI inventory and TCA baseline, savings and risk findings report, optimization build-out with evals, agent identity and ownership model, token budgets, observability setup, monthly TCA reviews.</td></tr>
+      <tr><th>Client responsibilities</th><td>An executive sponsor, a named owner per workflow, read access to billing and usage data, and access to model endpoints and test environments.</td></tr>
+      <tr><th>Assumptions</th><td>Ranges are illustrative estimates for a fictional sample company, to be finalized in the SOW. Scope covers up to 10 workflows in the AI Inventory, depending on complexity. Excludes software licenses, model and cloud spend, and automation build costs.</td></tr>
+      <tr><th>Proposed start / Next step</th><td><b>Start Phase 1 within two weeks of approval.</b> Next step: a 30-minute scoping call to confirm workflows and data access, then the SOW.</td></tr>
+    </table>
+  </div>
+  <div class="card eng" id="recover" style="border-top-color:var(--good)">
+    <h3 style="font-size:1.3rem;margin-top:0">How the client recovers the engagement cost <span class="sample">Sample company · illustrative; payback scales with client AI spend.</span></h3>
+    <p class="lead" style="margin-bottom:.6rem">Fees from the Recommended Engagement above, divided by the savings this assessment found. Savings are computed live from the other tabs, so they update when you change workflows or assumptions.</p>
+    <div id="recBody"></div>
+  </div>
+  </div>
+</section>
+
+<!-- 2 OPTIMIZATION RECOMMENDATIONS -->
+<section id="find">
+  <h2>2 · Optimization recommendations <span class="sample">Sample data</span></h2>
+  <p class="lead">Each recommendation is computed with the Model Calculator using verified list prices. Green dollar figures are <b>savings</b> if you act on the recommendation (monthly, with the yearly total and the before → after monthly cost). Risks have no dollar value, but they block attribution and control. The Preliminary Findings tab rolls these up into the score, the top savings, the risks to close and the Recommended Engagement.</p>
+  <div class="card" id="findList"></div>
+</section>
+
+<!-- 3 AI INVENTORY -->
+<section id="inv">
+  <h2>3 · See and attribute the AI you already run <span class="sample">Sample data — fictional company “Larkspur Meridian Freight Group”</span></h2>
+  <p class="lead">Before adding new endpoints, list every AI workflow, who owns it, which identity it runs as, and what it costs per <b>completed task</b>. Total Cost of AI (TCA) = tokens + compute/hosting + people/ops + governance/observability + idle agent compute.<span class="tip" tabindex="0" data-tip="A token is a small chunk of text (about ¾ of a word). Providers bill per million tokens read (input) and written (output). TCA adds everything else it takes to run the workflow safely.">i</span></p>
+  <div class="btns" style="margin:0 0 12px"><button id="blankBtn">Start with blank data</button><button class="reloadSample">Reload sample data</button> <span class="note" id="dataState"></span></div>
+  <div class="kpis" id="invKpis"></div>
+  <div class="card"><table id="invTable"></table>
+  <p class="note">Owners, volumes and token counts are invented for illustration. Monthly TCA uses the current model's verified list price plus the editable assumptions on the Sources &amp; Assumptions tab.</p></div>
+</section>
+
+<!-- 4 SWITCH PROVIDERS -->
+<section id="sw">
+  <h2>4 · Switch providers: same workflow, seven ways to run it <button class="pdfbtn" data-v="sw">Export to PDF</button></h2>
+  <p class="lead">Move one workflow across the lineup WWT clients see: Anthropic Claude, OpenAI on Azure, Google Gemini, NVIDIA Nemotron, Meta Llama (on AWS Bedrock), Mistral, and an open-weight / self-hosted option. See cost per task, monthly and annual cost, the change versus today, what you gain or lose, and the one-time cost to migrate. <b>Model choice is a governance decision, not just a procurement line item.</b></p>
+  <div class="card">
+    <div class="row">
+      <div><label>Workflow <span class="sample">sample</span></label><select id="swWf"></select></div>
+      <div><label>Compare at tier<span class="tip" tabindex="0" data-tip="Frontier = each lab's flagship model. Efficient = its small, low-cost model for high-volume, simpler work. Each column shows that provider's top and small model; the open-weight column uses one model for both. Nemotron, Llama and Mistral weights are open too, so they can also be self-hosted. 'Match current' picks the same tier the workflow uses today. You can override any column's model.">i</span></label>
+        <div class="btns" id="swTier"><button data-t="match" class="on">Match current</button><button data-t="frontier">Frontier</button><button data-t="efficient">Efficient</button></div></div>
+      <div><label><input type="checkbox" id="swCache"> Use prompt caching</label><label><input type="checkbox" id="swBatch"> Use batch API</label></div>
+    </div>
+    <div id="swCurrent" style="margin-top:10px;font-size:.92rem"></div>
+  </div>
+  <div class="grid5" id="swGrid"></div>
+  <p class="note">Green = cheaper or a gain versus the current model; red = more expensive or a loss. Migration cost and payback use editable assumptions (re-testing prompts, re-running evals). Quality is not priced here: run your own evals before switching.</p>
+</section>
+
+<!-- 5 MODEL CALCULATOR -->
+<section id="calc">
+  <h2>5 · Workflow / model calculator <button class="pdfbtn" data-v="calc">Export to PDF</button></h2>
+  <p class="lead">Pick a workflow and up to three models. Change any number; everything updates live. Model A is the baseline for savings.</p>
+  <div class="card">
+    <div class="row">
+      <div><label>Workflow <span class="sample">sample</span></label><select id="cWf"></select></div>
+      <div><label>Tasks / month</label><input type="number" id="cVol" min="0" step="1000"></div>
+      <div><label>Input tokens / task<span class="tip" tabindex="0" data-tip="Everything the model reads per task: instructions, retrieved documents, conversation history, tool results.">i</span></label><input type="number" id="cIn" min="0" step="100"></div>
+      <div><label>Output tokens / task<span class="tip" tabindex="0" data-tip="What the model writes per task, including hidden 'thinking' tokens on reasoning models. Output usually costs 3–5× input.">i</span></label><input type="number" id="cOut" min="0" step="50"></div>
+      <div><label>Cacheable share of input %<span class="tip" tabindex="0" data-tip="Share of the input that repeats every call (system prompt, policies, tool definitions). Providers bill cache hits at a deep discount. Cache-write surcharges are ignored here.">i</span></label><input type="number" id="cCache" min="0" max="95" step="5"></div>
+      <div><label>Task completion %<span class="tip" tabindex="0" data-tip="Share of tasks that finish successfully without a human redo. Cost per completed task = total monthly cost ÷ completed tasks. Measure this with evals, per model.">i</span></label><input type="number" id="cDone" min="1" max="100" step="1"></div>
+      <div><label><input type="checkbox" id="cBatch"> Batch API</label></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div><label>Model A (baseline)</label><select id="mA" class="msel"></select></div>
+      <div><label>Model B</label><select id="mB" class="msel"></select></div>
+      <div><label>Model C</label><select id="mC" class="msel"></select></div>
+      <div><label><input type="checkbox" id="promo"> Use today's promotional prices<span class="tip" tabindex="0" data-tip="Some prices are promotional and rise soon (e.g., Gemini 4 Carbon doubles on Dec 1, 2026). Off = the list price that applies after the promo ends.">i</span></label></div>
+    </div>
+  </div>
+  <div class="kpis" id="cKpis"></div>
+  <div class="card"><h3>Side by side</h3><table id="cTable"></table>
+    <div class="legend" style="margin-top:10px"><span><i class="seg-tok"></i>Tokens</span><span><i class="seg-cmp"></i>Compute / hosting</span><span><i class="seg-ppl"></i>People / ops</span><span><i class="seg-gov"></i>Governance / observability</span><span><i class="seg-idl"></i>Idle agent compute</span></div>
+    <div id="cBars"></div>
+  </div>
+  <div class="two">
+    <div class="card"><h3>What changes: A → B</h3><div id="chgB"></div></div>
+    <div class="card"><h3>What changes: A → C</h3><div id="chgC"></div></div>
+  </div>
+</section>
+
+<!-- 6 SOURCES & ASSUMPTIONS -->
+<section id="src">
+  <h2>6 · Sources &amp; assumptions</h2>
+  <div class="card"><h3>Editable assumptions (not verified; replace with client data)</h3>
+    <div class="row" id="assumpForm"></div>
+    <p class="note">All company data is sample/fictional. People, hosting, governance and migration figures are assumptions for illustration. Self-hosted GPU rate is an assumption, not a quote.</p>
+  </div>
+  <div class="card"><h3>Model prices (USD per 1M tokens, list price, standard tier) · each row shows when it was last checked</h3><table id="srcTable"></table>
+  <p class="note">OpenAI models are priced on Azure OpenAI Global Standard, which equals OpenAI's direct list price per token. NVIDIA Nemotron and Meta Llama are priced on AWS Bedrock on-demand (Standard tier, US regions); NVIDIA publishes no per-token price of its own. Mistral uses Mistral's official API prices. Excludes cache-write surcharges, long-context surcharges (GPT-6 long prompts; Claude Haiku 5.5 above 100K), regional/data-residency uplifts (Azure US Data Zone +10%, OpenAI +10%, Anthropic US-only 1.1×, Bedrock non-US regions), Bedrock Priority tier and tool fees. All sample tasks stay under those thresholds. Prices change often; re-check before any client use.</p></div>
+</section>
+</main>
+<div id="printArea"></div>
+<footer>Prepared by Rhonda Johnson for WWT discussion · Independent concept demo · Not affiliated with or endorsed by WWT or any model provider · Sample data for a fictional company</footer>
+
+<script>
+"use strict";
+const CHECKED="Nov 18, 2026";
+const SRC={
+ anth:"https://platform.claude.com/docs/en/about-claude/pricing",
+ oai:"https://developers.openai.com/api/docs/pricing",
+ azure:"https://prices.azure.com/api/retail/prices",
+ goog:"https://ai.google.dev/gemini-api/docs/pricing",
+ bedrock:"https://aws.amazon.com/bedrock/pricing/",
+ mis:"https://docs.mistral.ai/inference/pricing",
+ tog:"https://www.together.ai/pricing"
+};
+// prices per 1M tokens. cached = cache-hit input price (null = no caching listed)
+let MODELS=[];let PRICE_META={};
+const PROVS=[{k:"anthropic",n:"Anthropic Claude",s:"Anthropic"},{k:"openai",n:"OpenAI on Azure",s:"OpenAI on Azure (Global Standard = OpenAI list price)"},{k:"google",n:"Google Gemini",s:"Google"},{k:"nvidia",n:"NVIDIA Nemotron",s:"NVIDIA (via AWS Bedrock)"},{k:"meta",n:"Meta Llama",s:"Meta (via AWS Bedrock)"},{k:"mistral",n:"Mistral",s:"Mistral"},{k:"open",n:"Open-weight",s:"Open-weight / other"}];
+const PN=Object.fromEntries(PROVS.map(p=>[p.k,p.s]));
+const TIERPICK={anthropic:{frontier:"opus55",efficient:"haiku55"},openai:{frontier:"astra",efficient:"luna"},google:{frontier:"carbon",efficient:"flashlite35"},nvidia:{frontier:"nemosuper",efficient:"nemonano"},meta:{frontier:"llama4mav",efficient:"llama4scout"},mistral:{frontier:"mlarge4",efficient:"msmall4"},open:{frontier:"dsflash",efficient:"dsflash"}};
+// SAMPLE workflows (fictional)
+const WF=[
+ {id:"cs",name:"Customer service agent (tracking and claims)",owner:"D. Ramirez, Customer Operations",ident:"agent",identName:"agent-cx-01 (own agent identity)",vol:650000,tin:6000,tout:600,model:"opus55",cache:0,cacheable:60,batchable:false,done:90,idle:1800},
+ {id:"code",name:"Coding agent",owner:"S. Nakamura, Engineering Platform",ident:"agent",identName:"agent-dev-04 (own agent identity)",vol:60000,tin:40000,tout:4000,model:"astra",cache:50,cacheable:50,batchable:false,done:80,idle:2400,routeEasy:40},
+ {id:"rag",name:"Internal RAG knowledge bot",owner:"",ident:"shared",identName:"svc-ai-shared (shared service account)",vol:280000,tin:8000,tout:500,model:"opus55",cache:0,cacheable:30,batchable:false,done:93,idle:600},
+ {id:"doc",name:"Document summarization (contracts, bills of lading)",owner:"L. Haddad, Legal Ops",ident:"shared",identName:"svc-legal-batch (shared service account)",vol:140000,tin:20000,tout:1000,model:"carbon",cache:0,cacheable:10,batchable:true,done:96,idle:0},
+ {id:"inv",name:"Invoice processing",owner:"G. Mensah, Accounts Payable",ident:"shared",identName:"svc-ap-ocr (shared service account)",vol:260000,tin:3000,tout:300,model:"msmall4",cache:0,cacheable:40,batchable:true,done:97,idle:0,structured:70},
+ {id:"plan",name:"Load planning and dispatch agent",owner:"A. Kowalski, Network Operations",ident:"agent",identName:"agent-dispatch-03 (own agent identity)",vol:500000,tin:12000,tout:1500,model:"opus55",cache:50,cacheable:50,batchable:false,done:88,idle:3000},
+ {id:"carrier",name:"Carrier onboarding and compliance checks",owner:"P. Osei, Carrier Relations",ident:"agent",identName:"agent-carrier-05 (own agent identity)",vol:170000,tin:15000,tout:1500,model:"astra",cache:40,cacheable:40,batchable:false,done:92,idle:1200},
+ {id:"customs",name:"Customs and trade document classification",owner:"V. Lindqvist, Trade Compliance",ident:"agent",identName:"agent-trade-06 (own agent identity)",vol:600000,tin:5000,tout:400,model:"flashlite35",cache:0,cacheable:30,batchable:true,done:95,idle:0},
+ {id:"email",name:"Sales email drafting",owner:"C. Duarte, Sales Ops",ident:"agent",identName:"agent-sales-02 (own agent identity)",vol:150000,tin:2500,tout:400,model:"nemosuper",cache:0,cacheable:50,batchable:false,done:88,idle:0}
+];
+const A={rate:120,opsHrs:20,govHrs:8,obsPerK:1.50,infra:250,infraPerK:2.00,gpus:2,gpuHr:3.00,gpuUtil:35,selfOpsHrs:80,migPromptHrs:60,migEvalHrs:40,migRate:150,migEvalSpend:1500,migSameProvPct:40,selfSetupHrs:160};
+const ALAB={rate:["Blended people cost $/hr","Loaded hourly cost of ops, engineering and governance staff."],opsHrs:["Ops hours / workflow / month","Prompt upkeep, incidents, monitoring for an API-hosted workflow."],govHrs:["Governance review hours / month","Access reviews, policy checks, audit evidence per workflow."],obsPerK:["Observability $ per 1,000 tasks","Tracing, logging, eval tooling."],infra:["Base hosting $ / workflow / month","Gateway, vector store, orchestration for API models."],infraPerK:["Hosting $ per 1,000 tasks","Variable orchestration/storage cost."],gpus:["Self-host: GPUs","Number of GPUs provisioned 24×7 for a self-hosted model."],gpuHr:["Self-host: $ per GPU-hour","Assumption only. Replace with a cloud, colo or neo-cloud quote."],gpuUtil:["Self-host: GPU utilization %","Share of provisioned GPU time doing work. The rest is idle compute you still pay for."],selfOpsHrs:["Self-host: extra ops hours / month","Patching, scaling, model updates, on-call for your own inference stack."],migPromptHrs:["Migration: prompt re-test hours","One-time hours to adapt and re-test prompts/tools on a new provider."],migEvalHrs:["Migration: eval hours","One-time hours to rebuild and run evals and sign off quality."],migRate:["Migration $ / hour","Blended rate for migration work."],migEvalSpend:["Migration: eval run spend $","Token/compute spend to run eval suites."],migSameProvPct:["Same-provider switch effort %","Effort of switching models within one provider, as % of a full provider move."],selfSetupHrs:["Self-host: platform setup hours","One-time build of serving, scaling, security for self-hosting."]};
+
+const $=s=>document.querySelector(s);
+const fmtCT=iso=>{if(!iso)return"";const d=new Date(iso);return d.toLocaleString("en-US",{timeZone:"America/Chicago",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}).replace(" at "," ")+" CT";};
+const fmtD=iso=>iso?new Date(iso).toLocaleDateString("en-US",{timeZone:"America/Chicago",month:"short",day:"numeric",year:"numeric"}):"";
+const stampHtml=m=>m.self?'<div class="note">Editable assumption</div>':`<div class="note">Price last checked: ${fmtCT(m.last_checked)}${m.last_changed?'<br><b>Last changed: '+fmtD(m.last_changed)+'</b>':''}</div>`;
+const M=id=>MODELS.find(m=>m.id===id);
+let PROMO=false;
+const price=m=>(PROMO&&m.promo)?m.promo:m;
+const usd=(v,d)=>{if(!isFinite(v))return"–";const a=Math.abs(v);const dd=d!==undefined?d:(a<1?4:a<100?2:0);return(v<0?"-":"")+"$"+a.toLocaleString("en-US",{minimumFractionDigits:dd,maximumFractionDigits:dd});};
+const pct=v=>(v>0?"+":"")+v.toFixed(0)+"%";
+
+// core math
+function tokenCostPerTask(m,w,o){
+  if(m.self)return 0;const p=price(m);
+  const c=(o.cache&&p.cached!=null)?Math.min(o.cacheShare,95)/100:0;
+  let cost=(w.tin*(1-c)*p.in + w.tin*c*(p.cached||0) + w.tout*p.out)/1e6;
+  if(o.batch&&m.batch>0)cost*=1-m.batch/100;
+  return cost;
+}
+function tca(m,w,o){
+  const vol=o.vol!==undefined?o.vol:w.vol;
+  const tok=tokenCostPerTask(m,w,o)*vol;
+  let cmp,ppl,gov,idl;
+  gov=A.govHrs*A.rate+vol/1000*A.obsPerK;
+  if(m.self){
+    const gpu=A.gpus*A.gpuHr*730;
+    cmp=gpu*A.gpuUtil/100;idl=gpu*(1-A.gpuUtil/100)+(w.idle||0);
+    ppl=(A.opsHrs+A.selfOpsHrs)*A.rate;
+  }else{
+    cmp=A.infra+vol/1000*A.infraPerK;idl=w.idle||0;ppl=A.opsHrs*A.rate;
+  }
+  const total=tok+cmp+ppl+gov+idl;
+  const done=vol*(o.done!==undefined?o.done:w.done)/100;
+  return{tok,cmp,ppl,gov,idl,total,perTask:vol?tok/vol:0,perDone:done?total/done:0,annual:total*12};
+}
+const curOpts=w=>({cache:w.cache>0,cacheShare:w.cache,batch:false});
+function migCost(from,to){
+  if(from.id===to.id)return 0;
+  let c=(A.migPromptHrs+A.migEvalHrs)*A.migRate+A.migEvalSpend;
+  if(from.prov===to.prov&&!to.self)c*=A.migSameProvPct/100;
+  if(to.self)c+=A.selfSetupHrs*A.migRate;
+  return c;
+}
+const ctxNum=s=>{const m=/([\d.]+)\s*([MK])/.exec(s||"");if(!m)return null;return parseFloat(m[1])*(m[2]==="M"?1e6:1e3);};
+function diffs(a,b){ // chips for b relative to a
+  const g=[],l=[],n=[];
+  const ca=ctxNum(a.ctx),cb=ctxNum(b.ctx);
+  if(ca&&cb){if(cb>ca)g.push("Larger context ("+b.ctx+" vs "+a.ctx+")");else if(cb<ca)l.push("Smaller context ("+b.ctx+" vs "+a.ctx+")");}
+  else if(!cb)n.push("Context window: "+b.ctx);
+  const pa=price(a),pb=price(b);
+  if(pb.cached!=null&&pb.in>0){const off=Math.round((1-pb.cached/pb.in)*100);if(pa.cached==null)g.push("Prompt caching ("+off+"% off cached input)");else{const offa=Math.round((1-pa.cached/pa.in)*100);if(off>offa)g.push("Deeper cache discount ("+off+"% vs "+offa+"%)");else if(off<offa)l.push("Smaller cache discount ("+off+"% vs "+offa+"%)");}}
+  else if(pa.cached!=null&&!b.self)l.push("No listed prompt-cache price");
+  if(b.batch>a.batch)g.push("Batch discount "+b.batch+"% (vs "+a.batch+"%)");else if(b.batch<a.batch)l.push(b.batch?("Batch discount "+b.batch+"% (vs "+a.batch+"%)"):"No verified batch discount");
+  if(b.mm!==a.mm){if(/Not verified|Depends/.test(b.mm))n.push("Inputs: "+b.mm);else if(/Text only|^Text$/.test(b.mm)&&!/Text only|^Text$/.test(a.mm))l.push("Loses image input ("+b.mm+")");else if(/video|audio|Multimodal/i.test(b.mm)&&!/video|audio|Multimodal/i.test(a.mm))g.push("Broader multimodal input ("+b.mm+")");else n.push("Inputs: "+b.mm);}
+  if(b.tools!==a.tools)n.push("Tools: "+b.tools);
+  if(b.reason!==a.reason)n.push("Reasoning: "+b.reason);
+  if(b.res!==a.res)n.push("Residency: "+b.res);
+  if(b.promo&&!PROMO)n.push("Promo price ends "+b.promo.until);
+  if(b.self)g.push("Data stays on your infrastructure");
+  if(b.self)l.push("You run serving, scaling, patching");
+  if(b.tier!==a.tier&&b.tier!=="any")n.push("Tier change: "+a.tier+" → "+b.tier+" (re-run evals)");
+  return{g,l,n};
+}
+const chips=d=>d.g.map(x=>'<span class="chip g">+ '+x+'</span>').join("")+d.l.map(x=>'<span class="chip r">− '+x+'</span>').join("")+d.n.map(x=>'<span class="chip y">• '+x+'</span>').join("");
+
+// INVENTORY
+function renderInv(){
+  let rows="",tot=0,shared=0,noown=0;
+  WF.forEach(w=>{const m=M(w.model),t=tca(m,w,curOpts(w));tot+=t.total;if(w.ident==="shared")shared++;if(!w.owner)noown++;
+    rows+=`<tr><td><b>${w.name}</b></td><td>${w.owner||'<span class="bad"><b>No owner</b></span>'}</td><td>${w.ident==="agent"?'<span class="chip g">Agent identity</span>':'<span class="chip r">Shared service account</span>'}<div class="note">${w.identName}</div></td><td class="num">${w.vol.toLocaleString()}</td><td class="num">${w.tin.toLocaleString()} / ${w.tout.toLocaleString()}</td><td>${m.name}</td><td class="num">${usd(t.perDone,3)}</td><td class="num"><b>${usd(t.total)}</b></td></tr>`;});
+  $("#dataState").textContent=hasData()?"Showing the sample company (fictional).":"Blank: no workflows loaded.";
+  $("#invTable").innerHTML=(!hasData()?`<tr><td>${NODATA}</td></tr>`:"")+`<tr><th>Workflow / agent</th><th>Owner</th><th>Identity<span class="tip" tabindex="0" data-tip="Agents are a new workforce: each should have its own identity with least-privilege access so its actions and spend can be attributed. A shared service account hides who did what.">i</span></th><th class="num">Tasks / month</th><th class="num">Avg tokens in / out</th><th>Current model</th><th class="num">Cost per completed task</th><th class="num">Monthly TCA</th></tr>`+rows;
+  $("#invKpis").innerHTML=`<div class="kpi"><div class="l">AI workflows found</div><div class="v">${WF.length}</div></div><div class="kpi"><div class="l">Monthly Total Cost of AI</div><div class="v">${usd(tot)}</div></div><div class="kpi"><div class="l">Annualized</div><div class="v">${usd(tot*12)}</div></div><div class="kpi"><div class="l">Shared identities / no owner</div><div class="v bad">${shared} / ${noown}</div></div>`;
+}
+
+// DATA STATE (sample vs blank)
+const SAMPLE_WF=JSON.parse(JSON.stringify(WF));
+const hasData=()=>WF.length>0;
+const NODATA=`<div class="nodata">No workflows yet. Input data in the <a href="#inv" data-go="inv">3 · AI Inventory</a> tab, or use <b>Reload sample data</b> there.</div>`;
+function fillWfSelects(){const opts=WF.map(w=>`<option value="${w.id}">${w.name}</option>`).join("");$("#swWf").innerHTML=opts;$("#cWf").innerHTML=opts;if(hasData()){$("#swWf").value=WF.some(w=>w.id==="cs")?"cs":WF[0].id;$("#cWf").value=WF[0].id;}}
+function setData(list){WF.splice(0,WF.length,...JSON.parse(JSON.stringify(list)));fillWfSelects();if(hasData()){swDefaults();loadCalcWf();}renderAll(false);}
+
+// SWITCH
+let swTier="match";const swPick={};
+function swDefaults(){if(!hasData())return;const w=WF.find(x=>x.id===$("#swWf").value),cur=M(w.model);if(swTier==="match"&&!swDefaults.keep){$("#swCache").checked=w.cache>0;}const t=swTier==="match"?cur.tier:swTier;PROVS.forEach(p=>{swPick[p.k]=(p.k===cur.prov&&swTier==="match")?cur.id:TIERPICK[p.k][t==="any"?"efficient":t];});}
+function renderSw(){
+  if(!hasData()){$("#swCurrent").innerHTML="";$("#swGrid").innerHTML=NODATA;return;}
+  const w=WF.find(x=>x.id===$("#swWf").value),cur=M(w.model);
+  const o={cache:$("#swCache").checked,cacheShare:w.cache||w.cacheable,batch:$("#swBatch").checked};
+  const base=tca(cur,w,curOpts(w));
+  $("#swCurrent").innerHTML=`<b>Today:</b> ${w.name} runs on <b>${cur.name}</b> · ${w.vol.toLocaleString()} tasks/month · ${usd(base.total)}/month · ${usd(base.perDone,3)} per completed task <span class="sample">sample</span>`;
+  const cols=PROVS.map(p=>{const m=M(swPick[p.k]);const t=tca(m,w,o);return{p,m,t,d:diffs(cur,m),mig:migCost(cur,m)};});
+  const cell=(c,html)=>`<div class="${c.m.id===cur.id?'cur':''}">${html}</div>`;
+  let h=`<div class="hd rl">Provider</div>`+cols.map(c=>`<div class="hd ${c.m.id===cur.id?'cur':''}"><div class="provname">${c.p.n}</div>${c.m.id===cur.id?'<span class="pill">CURRENT</span>':''}</div>`).join("");
+  h+=`<div class="rl">Model</div>`+cols.map(c=>cell(c,`<select data-p="${c.p.k}" class="swsel" style="width:100%;font-size:.8rem">${MODELS.filter(m=>m.prov===c.p.k).map(m=>`<option value="${m.id}" ${m.id===c.m.id?'selected':''}>${m.name}</option>`).join("")}</select>`)).join("");
+  h+=`<div class="rl">List price in / out<span class="tip" tabindex="0" data-tip="US dollars per 1 million tokens, from the provider's official pricing page, checked ${CHECKED}. OpenAI models are priced on Azure Global Standard, which equals OpenAI's direct list price. NVIDIA and Meta models are priced on AWS Bedrock.">i</span></div>`+cols.map(c=>{const p=price(c.m);return cell(c,(c.m.self?'No token bill':`${usd(p.in,2)} / ${usd(p.out,2)}`)+stampHtml(c.m))}).join("");
+  h+=`<div class="rl">Token cost per task</div>`+cols.map(c=>cell(c,usd(c.t.perTask,4))).join("");
+  h+=`<div class="rl">Cost per completed task (TCA)</div>`+cols.map(c=>cell(c,`<b>${usd(c.t.perDone,3)}</b>`)).join("");
+  h+=`<div class="rl">Monthly TCA</div>`+cols.map(c=>cell(c,`<span style="font-size:1.05rem;font-weight:800">${usd(c.t.total)}</span>`)).join("");
+  h+=`<div class="rl">Annual TCA</div>`+cols.map(c=>cell(c,usd(c.t.annual))).join("");
+  h+=`<div class="rl">vs current / year</div>`+cols.map(c=>{const dv=c.t.annual-base.annual;const pc=base.annual?dv/base.annual*100:0;return cell(c,c.m.id===cur.id&&Math.abs(dv)<1?'<span class="note">baseline</span>':Math.abs(dv)<1?'<b>Same cost</b>':`<span class="${dv<0?'good':'bad'}" style="font-weight:800;font-size:1.05rem">${dv<0?'Save ':'Adds '}${usd(Math.abs(dv))}</span><div class="note">${pct(pc)} · ${usd(dv/12)}/mo</div>`)}).join("");
+  h+=`<div class="rl">One-time migration<span class="tip" tabindex="0" data-tip="Editable assumption: hours to re-test prompts and tools, rebuild and run evals, plus eval spend. Same-provider model swaps cost less; self-hosting adds platform setup.">i</span></div>`+cols.map(c=>cell(c,c.mig?usd(c.mig)+'<div class="note">assumption</div>':'—')).join("");
+  h+=`<div class="rl">Payback</div>`+cols.map(c=>{const s=(base.total-c.t.total);return cell(c,c.mig===0?'—':s>0?`<b>${(c.mig/s).toFixed(1)} months</b>`:'<span class="bad">No payback</span>')}).join("");
+  h+=`<div class="rl">Context window</div>`+cols.map(c=>cell(c,c.m.ctx)).join("");
+  h+=`<div class="rl">Prompt caching</div>`+cols.map(c=>{const p=price(c.m);return cell(c,p.cached!=null?`Yes · cached input ${usd(p.cached,3)}`:(c.m.self?'Your stack':'Not listed'))}).join("");
+  h+=`<div class="rl">Batch discount</div>`+cols.map(c=>cell(c,c.m.batch?c.m.batch+'% off':'Not verified')).join("");
+  h+=`<div class="rl">Multimodal</div>`+cols.map(c=>cell(c,c.m.mm)).join("");
+  h+=`<div class="rl">Built-in tools</div>`+cols.map(c=>cell(c,c.m.tools)).join("");
+  h+=`<div class="rl">Reasoning</div>`+cols.map(c=>cell(c,c.m.reason)).join("");
+  h+=`<div class="rl">Data residency / hosting</div>`+cols.map(c=>cell(c,c.m.res)).join("");
+  h+=`<div class="rl">Gains and losses vs current</div>`+cols.map(c=>cell(c,c.m.id===cur.id?'<span class="note">current</span>':chips(c.d))).join("");
+  $("#swGrid").style.setProperty("--ncol",cols.length);$("#swGrid").innerHTML=h;
+  document.querySelectorAll(".swsel").forEach(s=>s.onchange=e=>{swPick[e.target.dataset.p]=e.target.value;renderSw();});
+}
+
+// CALCULATOR
+function loadCalcWf(){if(!hasData())return;const w=WF.find(x=>x.id===$("#cWf").value);$("#cVol").value=w.vol;$("#cIn").value=w.tin;$("#cOut").value=w.tout;$("#cCache").value=w.cache;$("#cDone").value=w.done;$("#cBatch").checked=false;
+  $("#mA").value=w.model;const cur=M(w.model);const alt=PROVS.filter(p=>p.k!==cur.prov&&p.k!=="open").map(p=>M(TIERPICK[p.k][cur.tier])).sort((x,y)=>tca(x,w,curOpts(w)).total-tca(y,w,curOpts(w)).total);$("#mB").value=alt[0].id;$("#mC").value=TIERPICK.open.efficient;}
+function renderCalc(){
+  if(!hasData()){$("#cKpis").innerHTML="";$("#cTable").innerHTML=`<tr><td>${NODATA}</td></tr>`;return;}
+  const w0=WF.find(x=>x.id===$("#cWf").value);
+  const w=Object.assign({},w0,{vol:+$("#cVol").value||0,tin:+$("#cIn").value||0,tout:+$("#cOut").value||0,done:Math.max(1,+$("#cDone").value||1)});
+  const o={cache:(+$("#cCache").value||0)>0,cacheShare:+$("#cCache").value||0,batch:$("#cBatch").checked};
+  const ms=["#mA","#mB","#mC"].map(s=>M($(s).value));
+  const rs=ms.map(m=>tca(m,w,o));
+  const sB=rs[0].total-rs[1].total,sC=rs[0].total-rs[2].total;
+  $("#cKpis").innerHTML=ms.map((m,i)=>`<div class="kpi"><div class="l">${"ABC"[i]} · ${m.name}</div><div class="v">${usd(rs[i].total)}<span style="font-size:.8rem;font-weight:600">/mo</span></div><div class="note">${usd(rs[i].perDone,3)} per completed task</div></div>`).join("")+
+   `<div class="kpi"><div class="l">vs A, per year</div><div class="v ${sB>=0?'good':'bad'}" style="font-size:1.2rem">B: ${sB>=0?'saves ':'costs '}${usd(Math.abs(sB*12))}${sB>=0?'':' more'}</div><div class="v ${sC>=0?'good':'bad'}" style="font-size:1.2rem">C: ${sC>=0?'saves ':'costs '}${usd(Math.abs(sC*12))}${sC>=0?'':' more'}</div></div>`;
+  const R=(l,f,tip)=>`<tr><td><b>${l}</b>${tip?`<span class="tip" tabindex="0" data-tip="${tip}">i</span>`:''}</td>${rs.map((r,i)=>`<td class="num">${f(r,ms[i],i)}</td>`).join("")}</tr>`;
+  $("#cTable").innerHTML=`<tr><th></th>${ms.map((m,i)=>`<th class="num">${"ABC"[i]} · ${m.name}</th>`).join("")}</tr>`+
+   R("Price in / out per 1M",(r,m)=>(m.self?"No token bill":usd(price(m).in,2)+" / "+usd(price(m).out,2))+stampHtml(m))+
+   R("Token cost per task",r=>usd(r.perTask,4))+
+   R("Tokens / month",r=>usd(r.tok))+
+   R("Compute / hosting",r=>usd(r.cmp),"API models: gateway, vector store, orchestration. Self-hosted: the busy share of GPU cost.")+
+   R("People / ops",r=>usd(r.ppl),"Hours × blended rate. Self-hosting adds ops hours: open weights are not automatically cheaper.")+
+   R("Governance / observability",r=>usd(r.gov),"Access and policy reviews plus tracing/eval tooling.")+
+   R("Idle agent compute",r=>usd(r.idl),"Always-on agent runtimes and provisioned GPUs that sit idle but still bill.")+
+   R("Monthly TCA",r=>`<b>${usd(r.total)}</b>`)+R("Annual TCA",r=>usd(r.annual))+
+   R("Cost per completed task",r=>`<b>${usd(r.perDone,3)}</b>`,"Monthly TCA ÷ (tasks × completion rate). The unit Jack's 'cost per completed task' framing points to.")+
+   R("Δ vs A per month",(r,m,i)=>i===0?"baseline":`<span class="${r.total<=rs[0].total?'good':'bad'}">${usd(r.total-rs[0].total)} (${pct(rs[0].total?(r.total-rs[0].total)/rs[0].total*100:0)})</span>`)+
+   R("Context window",(r,m)=>m.ctx);
+  const mx=Math.max(...rs.map(r=>r.total))||1;
+  $("#cBars").innerHTML=rs.map((r,i)=>`<div style="margin-top:6px"><b>${"ABC"[i]} · ${ms[i].name}</b> — ${usd(r.total)}/mo<div class="bar" style="width:${Math.max(8,r.total/mx*100)}%">${[["tok","seg-tok"],["cmp","seg-cmp"],["ppl","seg-ppl"],["gov","seg-gov"],["idl","seg-idl"]].map(([k,c])=>`<span class="${c}" style="width:${r.total?r[k]/r.total*100:0}%" title="${k}: ${usd(r[k])}"></span>`).join("")}</div></div>`).join("");
+  ["B","C"].forEach((L,j)=>{const b=ms[j+1],d=diffs(ms[0],b);const inc=[];const pb=price(b);if(pb.cached!=null)inc.push("Prompt caching at "+usd(pb.cached,3)+"/1M cached input");if(b.batch)inc.push("Batch API: "+b.batch+"% off for non-urgent work");if(b.tools&&!/Not verified|You build/.test(b.tools))inc.push("Built-in tools: "+b.tools);if(ctxNum(b.ctx))inc.push("Context window "+b.ctx+" at standard price"+(b.note&&/≥200K|100K/.test(b.note)?" (long prompts cost more)":""));
+    $("#chg"+L).innerHTML=`<div style="margin-bottom:6px"><b>${ms[0].name} → ${b.name}</b></div>${chips(d)||'<span class="note">Same model</span>'}<h3 style="font-size:.95rem">Included at no extra cost</h3><ul style="margin:0;padding-left:20px;font-size:.85rem">${inc.map(x=>`<li>${x}</li>`).join("")||'<li>None verified</li>'}</ul>${b.note?`<p class="note">${b.note}</p>`:''}`;});
+}
+
+// FINDINGS
+function computeFindings(){
+  const F=[];
+  const g=id=>WF.find(w=>w.id===id);
+  let w=g("rag"),a=tca(M(w.model),w,curOpts(w)),b=tca(M("haiku55"),w,curOpts(w));
+  F.push({ic:"🔺",t:"Frontier model on a simple task",d:`${w.name} answers FAQ-style questions on <b>${M(w.model).name}</b>. Moving to <b>Claude Haiku 5.5</b> (same provider, same 1M context) cuts token cost; validate with evals.`,s:a.total-b.total,ba:[a.total,b.total],kind:"cost"});
+  w=g("cs");a=tca(M(w.model),w,curOpts(w));b=tca(M(w.model),w,{cache:true,cacheShare:w.cacheable,batch:false});
+  {const pm=price(M(w.model)),inB=w.vol*w.tin*pm.in/1e6,inA=w.vol*w.tin*((1-w.cacheable/100)*pm.in+(w.cacheable/100)*pm.cached)/1e6;
+  F.push({ic:"🧊",t:"Turn on prompt caching",d:`${w.name} resends the same ~${w.cacheable}% of every prompt (policies, tool definitions) without caching today. With caching on, that repeated input bills at ${usd(pm.cached,2)} instead of ${usd(pm.in,2)} per 1M tokens.<div style="margin-top:4px;color:var(--ink)"><b>Input token cost:</b> ${usd(inB)} → <b class="good">${usd(inA)}</b> / month</div>`,s:a.total-b.total,ba:[a.total,b.total],kind:"cost"});}
+  w=g("inv");a=tca(M(w.model),w,curOpts(w));const autoShare=w.structured/100;
+  {const sv=(a.tok+w.vol/1000*(A.obsPerK+A.infraPerK))*autoShare;
+  F.push({ic:"⚙️",t:"Should be plain automation: no LLM needed",d:`${w.structured}% of ${w.name.toLowerCase()} volume is structured e-invoices with fixed fields. Route those to rules/OCR automation and keep the LLM (<b>${M(w.model).name}</b>) for the messy ${100-w.structured}%. (Automation build cost not included.)`,s:sv,ba:[a.total,a.total-sv],kind:"cost"});}
+  w=g("doc");a=tca(M(w.model),w,curOpts(w));b=tca(M(w.model),w,{cache:false,cacheShare:0,batch:true});
+  F.push({ic:"🕒",t:"Overnight work not using the batch API",d:`${w.name} has no real-time need. ${M(w.model).name} batch pricing is ${M(w.model).batch}% off.`,s:a.total-b.total,ba:[a.total,b.total],kind:"cost"});
+  w=g("code");const cur=M(w.model),easy=M("luna");a=tca(cur,w,curOpts(w));
+  const tE=tca(easy,w,curOpts(w));const routed=a.tok*(1-w.routeEasy/100)+tE.tok*(w.routeEasy/100);
+  F.push({ic:"🔀",t:"Route easy steps to a smaller model",d:`${w.name}: keep <b>${cur.name}</b> for hard changes, send the ~${w.routeEasy}% of steps that are lookups, lint fixes and test runs to <b>${easy.name}</b>.`,s:a.tok-routed,ba:[a.total,a.total-(a.tok-routed)],kind:"cost"});
+  WF.filter(x=>!x.owner).forEach(x=>F.push({ic:"👤",t:"Agent has no owner",d:`${x.name} has no named business owner. Nobody approves its spend, access or changes. Assign an owner and a monthly token budget.`,s:0,kind:"risk"}));
+  WF.filter(x=>x.ident==="shared").forEach(x=>F.push({ic:"🔑",t:"Shared service account identity",d:`${x.name} runs as <code>${x.identName.split(" ")[0]}</code>. Give it its own agent identity with least-privilege access so actions and cost can be attributed and shut off.`,s:0,kind:"risk"}));
+  return F;
+}
+function renderFind(){
+  $("#readEmpty").style.display=hasData()?"none":"block";$("#readReport").style.display=hasData()?"":"none";
+  document.querySelectorAll('.pdfbtn[data-v="read"]').forEach(b=>b.style.display=hasData()?"":"none");
+  if(!hasData()){$("#findList").innerHTML=NODATA;return;}
+  const F=computeFindings();
+  $("#findList").innerHTML=F.map(f=>`<div class="finding"><div class="ic">${f.ic}</div><div><b>${f.t}</b><div style="font-size:.88rem;color:var(--muted)">${f.d}</div></div><div class="sv ${f.kind==="cost"?'good':'warn'}">${f.kind==="cost"?'<span style="font-size:.8rem;font-weight:700">Saves</span> '+usd(f.s)+'<span style="font-size:.8rem;font-weight:700"> / month</span><div class="note">Saves '+usd(f.s*12)+' / year'+(f.ba?'<br>Monthly cost '+usd(f.ba[0])+' → '+usd(f.ba[1]):'')+'</div>':'Risk<div class="note">no dollar value; blocks attribution and control</div>'}</div></div>`).join("");
+  // findings roll-up
+  const cost=F.filter(f=>f.kind==="cost"),risk=F.filter(f=>f.kind==="risk");
+  const score=Math.max(0,100-8*cost.length-5*risk.length);
+  $("#scoreN").textContent=score;
+  const tot=WF.reduce((s,w)=>s+tca(M(w.model),w,curOpts(w)).total,0),sv=cost.reduce((s,f)=>s+f.s,0);
+  $("#readKpis").innerHTML=`<div class="kpi"><div class="l">Monthly total cost assessed</div><div class="v">${usd(tot)}</div></div><div class="kpi"><div class="l">Identified savings / month</div><div class="v good">${usd(sv)}</div><div class="note">${(sv/tot*100).toFixed(0)}% of TCA</div></div><div class="kpi"><div class="l">Annualized savings</div><div class="v good">${usd(sv*12)}</div></div><div class="kpi"><div class="l">Risks to be remediated</div><div class="v warn">${risk.length}</div></div>`;
+  const top=cost.slice().sort((x,y)=>y.s-x.s).slice(0,3);
+  $("#top3").innerHTML=`<tr><th>Finding</th><th class="num">Saves / month</th><th class="num">Saves / year</th></tr>`+top.map(f=>`<tr><td>${f.ic} ${f.t}</td><td class="num good"><b>Saves ${usd(f.s)}</b></td><td class="num">${usd(f.s*12)}</td></tr>`).join("");
+  $("#riskList").innerHTML=`<tr><th>Risk</th><th>Why it matters</th></tr>`+risk.map(f=>`<tr><td>${f.ic} <b>${f.t}</b></td><td style="font-size:.85rem">${f.d}</td></tr>`).join("");
+  $("#engSave").textContent=usd(sv*12)+" / year";
+  $("#engPay").textContent="See “How the client recovers the engagement cost” below.";
+  renderRecover(sv,tot);
+}
+
+// ENGAGEMENT COST RECOVERY (fees fixed in Recommended Engagement; savings live from the findings)
+const FEES={p1:[50000,80000],p12:[150000,255000],ret:[20000,35000]};
+function renderRecover(sv,tot){
+  const mo=x=>sv>0?(x/sv).toFixed(1):"—";const rate=tot>0?sv/tot:0;const SC=36;
+  const bar=(lo,hi)=>{const a=Math.min(100,lo/sv/SC*100),b=Math.min(100,hi/sv/SC*100);return `<div class="rbar"><div class="f hi" style="width:${b}%"></div><div class="f lo" style="width:${a}%"></div><div class="m12" style="left:${12/SC*100}%"></div></div>`;};
+  const net=[sv-FEES.ret[0],sv-FEES.ret[1]];
+  const be12=[FEES.p12[0]/12,FEES.p12[1]/12];
+  const spend=x=>rate>0?usd(x/rate):"—";
+  $("#recBody").innerHTML=`
+  <table class="rtab"><tr><th style="width:34%">Fee</th><th class="num">Low fee</th><th class="num">High fee</th><th style="width:34%">Months to pay back (0–36 months; dashed line = 12 months)</th></tr>
+   <tr><td><b>(a) Phase 1 · Assess</b><div class="note">${usd(FEES.p1[0])}–${usd(FEES.p1[1])} ÷ ${usd(sv)} / month savings</div></td><td class="num"><b>${mo(FEES.p1[0])} months</b></td><td class="num"><b>${mo(FEES.p1[1])} months</b></td><td>${sv>0?bar(FEES.p1[0],FEES.p1[1]):'No savings found'}</td></tr>
+   <tr><td><b>(b) Phases 1–2 · Assess + Optimize (fixed fees)</b><div class="note">${usd(FEES.p12[0])}–${usd(FEES.p12[1])} ÷ ${usd(sv)} / month savings</div></td><td class="num"><b>${mo(FEES.p12[0])} months</b></td><td class="num"><b>${mo(FEES.p12[1])} months</b></td><td>${sv>0?bar(FEES.p12[0],FEES.p12[1]):'No savings found'}</td></tr>
+   <tr><td><b>(c) Phase 3 · Govern &amp; Run retainer</b><div class="note">${usd(FEES.ret[0])}–${usd(FEES.ret[1])} / month vs ${usd(sv)} / month savings</div></td><td class="num ${net[0]>=0?'good':'bad'}"><b>${net[0]>=0?'+':'−'}${usd(Math.abs(net[0]))} / month</b></td><td class="num ${net[1]>=0?'good':'bad'}"><b>${net[1]>=0?'+':'−'}${usd(Math.abs(net[1]))} / month</b></td><td style="font-size:.85rem">${net[0]>=0&&net[1]>=0?`<b class="good">Savings cover the retainer at both ends of the range.</b> After paying it, the client keeps ${usd(net[1])}–${usd(net[0])} a month of the savings, so Phase 3 pays for itself and also closes the risks above.`:(net[0]>=0?`<b>Savings cover the low retainer only.</b> At the high end the retainer costs ${usd(Math.abs(net[1]))} a month more than the savings; the difference is justified by risk reduction and governance (the risks above).`:'<b>Savings do not cover the retainer at this sample spend.</b> Net monthly value after the retainer is negative, so Phase 3 is justified by risk reduction and governance (the risks above), or pays for itself only above the break-even below.')}</td></tr>
+  </table>
+  <h3>(d) Break-even</h3>
+  <table class="rtab"><tr><th style="width:34%">Goal</th><th class="num">Monthly AI savings needed (low – high fee)</th><th class="num">Client monthly AI spend (TCA) at the same ${(rate*100).toFixed(0)}% savings rate</th><th class="num">This sample company</th></tr>
+   <tr><td><b>(i) Pay back Phases 1–2 within 12 months</b></td><td class="num"><b>${usd(be12[0])}–${usd(be12[1])}</b></td><td class="num">${spend(be12[0])}–${spend(be12[1])}</td><td class="num">${usd(sv)} savings · ${usd(tot)} TCA</td></tr>
+   <tr><td><b>(ii) Cover the Phase 3 retainer</b></td><td class="num"><b>${usd(FEES.ret[0])}–${usd(FEES.ret[1])}</b></td><td class="num">${spend(FEES.ret[0])}–${spend(FEES.ret[1])}</td><td class="num">${usd(sv)} savings · ${usd(tot)} TCA</td></tr>
+  </table>
+  <p class="note">Sample company · illustrative; payback scales with client AI spend. Payback = fee ÷ monthly savings identified on this page (${usd(sv)} / month, ${usd(sv*12)} / year). Fees are the proposed ranges above, to be finalized in the SOW. Savings exclude the cost of making the changes beyond these fees.</p>`;
+}
+
+// SOURCES
+function renderSrc(){
+  $("#srcTable").innerHTML=`<tr><th>Provider</th><th>Model</th><th class="num">Input</th><th class="num">Output</th><th class="num">Cached input</th><th>Context</th><th>Batch</th><th>Last checked / changed</th><th>Source</th></tr>`+
+   MODELS.map(m=>`<tr><td>${PN[m.prov]||m.prov}</td><td><b>${m.name}</b>${m.note?`<div class="note">${m.note}</div>`:''}</td><td class="num">${m.self?'—':usd(m.in,2)}</td><td class="num">${m.self?'—':usd(m.out,2)}</td><td class="num">${m.cached!=null?usd(m.cached,3):'—'}</td><td>${m.ctx}</td><td>${m.batch?m.batch+'%':'—'}</td><td style="font-size:.75rem">${m.self?'Assumption':fmtCT(m.last_checked)}${m.last_changed?'<br><b>Changed '+fmtD(m.last_changed)+'</b>':''}</td><td style="font-size:.72rem;word-break:break-all">${m.src?`<a href="${m.src}">${m.src}</a>`:'Editable assumption'}${m.src2?`<br><a href="${m.src2}">${m.src2}</a>`:''}</td></tr>`).join("");
+  $("#assumpForm").innerHTML=Object.keys(A).map(k=>`<div><label>${ALAB[k][0]}<span class="tip" tabindex="0" data-tip="${ALAB[k][1]}">i</span></label><input type="number" step="any" data-a="${k}" value="${A[k]}"></div>`).join("");
+  document.querySelectorAll("[data-a]").forEach(i=>i.oninput=e=>{const v=parseFloat(e.target.value);if(isFinite(v)){A[e.target.dataset.a]=v;renderAll(false);}});
+}
+
+function renderAll(src){renderInv();renderSw();renderCalc();renderFind();if(src)renderSrc();}
+function init(){
+  fillWfSelects();
+  const mo=PROVS.map(p=>`<optgroup label="${PN[p.k]}">${MODELS.filter(m=>m.prov===p.k).map(m=>`<option value="${m.id}">${m.name}</option>`).join("")}</optgroup>`).join("");
+  document.querySelectorAll(".msel").forEach(s=>s.innerHTML=mo);
+  swDefaults();loadCalcWf();
+  $("#swWf").onchange=()=>{swDefaults();renderSw();};
+  document.querySelectorAll("#swTier button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#swTier button").forEach(x=>x.classList.remove("on"));b.classList.add("on");swTier=b.dataset.t;swDefaults();renderSw();});
+  ["#swCache","#swBatch"].forEach(s=>$(s).onchange=renderSw);
+  $("#cWf").onchange=()=>{loadCalcWf();renderCalc();};
+  ["#cVol","#cIn","#cOut","#cCache","#cDone"].forEach(s=>$(s).oninput=renderCalc);
+  ["#cBatch","#mA","#mB","#mC"].forEach(s=>$(s).onchange=renderCalc);
+  $("#promo").onchange=e=>{PROMO=e.target.checked;renderAll(false);};
+  document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>show(b.dataset.s));
+  document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){e.preventDefault();show(g.dataset.go);}});
+  $("#blankBtn").onclick=()=>setData([]);
+  document.querySelectorAll(".reloadSample").forEach(b=>b.onclick=()=>setData(SAMPLE_WF));
+  renderAll(true);
+  show((location.hash||"#read").slice(1));
+}
+function cols(view){ // models shown in current view
+  if(view==="sw")return PROVS.map(p=>M(swPick[p.k]));
+  if(view==="calc")return ["#mA","#mB","#mC"].map(x=>M($(x).value));
+  return [...new Set(WF.map(w=>w.model))].map(M);}
+function exportPDF(view){
+  const now=fmtCT(new Date().toISOString());
+  let body="";
+  if(view==="sw"){const t=document.createElement("table");const g=[...document.querySelectorAll("#swGrid>div")];const n=PROVS.length+1;let h="";
+    for(let i=0;i<g.length;i+=n){const r=g.slice(i,i+n);h+="<tr>"+r.map((c,j)=>{let x=c.cloneNode(true);x.querySelectorAll("select").forEach(se=>{const sp=document.createElement("b");sp.textContent=se.options[se.selectedIndex].text;se.replaceWith(sp);});return (i===0||j===0?"<th>":"<td>")+x.innerHTML+(i===0||j===0?"</th>":"</td>");}).join("")+"</tr>";}
+    body=`<p><b>${$("#swCurrent").innerText}</b></p><table>${h}</table>`;}
+  if(view==="calc")body=`<p><b>Workflow:</b> ${$("#cWf").selectedOptions[0].text} · ${(+$("#cVol").value).toLocaleString()} tasks/month · ${$("#cIn").value} input / ${$("#cOut").value} output tokens per task · cacheable ${$("#cCache").value}% · completion ${$("#cDone").value}% · batch ${$("#cBatch").checked?"on":"off"}</p><table>${$("#cTable").innerHTML}</table>`;
+  if(view==="read"&&!hasData())body=`<p>Input data in the 3 · AI Inventory tab in order to show your preliminary findings report.</p>`;
+  else if(view==="read"){const eng=$("#engage").cloneNode(true);body=`<p style="font-size:14pt"><b>Tokenomics maturity score: ${$("#scoreN").textContent}/100</b></p><div>${[...document.querySelectorAll("#readKpis .kpi")].map(k=>k.innerText.replace(/\n/g,": ")).join(" · ")}</div><h3>Top 3 savings</h3><table>${$("#top3").innerHTML}</table><h3>Risks to remediate</h3><table>${$("#riskList").innerHTML}</table><div class="eng" style="page-break-before:always">${eng.innerHTML}</div><div class="eng" style="page-break-before:always">${$("#recover").innerHTML}</div>`;}
+  const fn=cols(view).filter(Boolean).map(m=>m.self?`<li>${m.name}: no token price; hosting, GPU and ops figures are editable assumptions.</li>`:`<li>Price for ${m.name} last verified ${fmtCT(m.last_checked)}${m.last_changed?` (last changed ${fmtD(m.last_changed)})`:""}. Source: ${m.src}</li>`).join("");
+  const title={sw:"Provider switch comparison",calc:"Workflow / model cost comparison",read:"AI Optimizer: Preliminary Findings and Recommended Engagement"}[view];
+  $("#printArea").innerHTML=`<h1>${title}</h1><div class="fn">AI Optimizer · Tokenomics Assessment &amp; AI Workflow Cost Calculator · Prepared by Rhonda Johnson for WWT discussion · Independent concept, not a WWT product</div><div class="fn"><b>Generated ${now}</b> · Price list last verified ${fmtCT(PRICE_META.list_verified_at)} · ${PROMO?"Promotional prices shown where offered":"Post-promotion list prices"}</div><p class="fn"><b>Sample data:</b> workflows, volumes, owners and identities are for a fictional company. People, hosting, governance and migration costs are editable assumptions.</p>${body}<h3>Price footnotes</h3><ol class="fn">${fn}</ol><p class="fn">USD per 1M tokens, standard tier, excluding taxes, cache-write, long-context, regional and tool surcharges. Prices change often; re-verify before contracting.</p>`;
+  window.print();}
+function show(id){if(!document.getElementById(id))id="read";document.querySelectorAll("section").forEach(s=>s.classList.toggle("active",s.id===id));document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.s===id));history.replaceState(null,"","#"+id);window.scrollTo(0,0);}
+window.TOK={get MODELS(){return MODELS},WF,A,tca,tokenCostPerTask,curOpts,migCost,computeFindings,exportPDF};
+Promise.resolve({"list_verified_at": "2026-11-18T09:15:20-06:00", "models": [{"id": "opus55", "prov": "anthropic", "name": "Claude Opus 5.5", "tier": "frontier", "in": 4, "out": 20, "cached": 0.2, "ctx": "1M", "batch": 50, "mm": "Text + image in", "tools": "Tool use", "reason": "Long-running agentic work", "res": "US-only inference option (1.1\u00d7 price)", "src": "https://platform.claude.com/docs/en/about-claude/pricing", "src2": "https://platform.claude.com/docs/en/about-claude/models/overview", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "haiku55", "prov": "anthropic", "name": "Claude Haiku 5.5", "tier": "efficient", "in": 0.1, "out": 0.5, "cached": 0.01, "ctx": "1M", "batch": 50, "mm": "Text + image in", "tools": "Tool use", "reason": "Fast, high-volume", "res": "US-only inference option (1.1\u00d7 price)", "src": "https://platform.claude.com/docs/en/about-claude/pricing", "src2": "https://platform.claude.com/docs/en/about-claude/models/overview", "note": "Price for prompts up to 100K tokens; $0.50/$2.50 above.", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "astra", "prov": "openai", "name": "GPT-6 Astra (Azure OpenAI)", "tier": "frontier", "in": 10, "out": 50, "cached": 1, "ctx": "1.05M", "batch": 50, "mm": "Text + image in", "tools": "Functions, web search, file search, computer use", "reason": "Effort: low \u2192 max", "res": "Azure Global Standard (= OpenAI list price); US Data Zone +10%", "src": "https://prices.azure.com/api/retail/prices?$filter=serviceName%20eq%20%27Foundry%20Models%27%20and%20armRegionName%20eq%20%27eastus2%27%20and%20productName%20eq%20%27Azure%20OpenAI%20GPT6%27", "src2": "https://developers.openai.com/api/docs/pricing", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active", "note": "Azure Global Standard price equals OpenAI's direct list price. US Data Zone: $11 / $55, cached $1.10. Long prompts: $20 / $75. 50% off via Azure Global Flex or OpenAI Batch. OpenAI direct (developers.openai.com, checked Nov 18, 2026) now also lists the newer GPT-6.2 Astra at $8 / $40 (cached $0.40) and GPT-6.2 Sol at $2 / $10 (cached $0.10); GPT-6.2 is not yet in Azure Retail Prices, so this demo keeps GPT-6 Astra on Azure."}, {"id": "luna", "prov": "openai", "name": "GPT-6 Luna (Azure OpenAI)", "tier": "efficient", "in": 0.1, "out": 0.5, "cached": 0.01, "ctx": "1.05M", "batch": 50, "mm": "Text + image in", "tools": "Functions, web search, file search, computer use", "reason": "Effort: none \u2192 max", "res": "Azure Global Standard (= OpenAI list price); US Data Zone +10%", "src": "https://prices.azure.com/api/retail/prices?$filter=serviceName%20eq%20%27Foundry%20Models%27%20and%20armRegionName%20eq%20%27eastus2%27%20and%20productName%20eq%20%27Azure%20OpenAI%20GPT6%27", "src2": "https://developers.openai.com/api/docs/pricing", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active", "note": "Azure Global Standard price equals OpenAI's direct list price. US Data Zone: $0.11 / $0.55, cached $0.011. Long prompts: $0.20 / $0.75. 50% off via Azure Global Flex or OpenAI Batch."}, {"id": "carbon", "prov": "google", "name": "Gemini 4 Carbon", "tier": "frontier", "in": 4, "out": 20, "cached": 0.2, "promo": {"in": 2, "out": 10, "cached": 0.1, "until": "Nov 30, 2026"}, "ctx": "1M", "batch": 50, "mm": "Multimodal in", "tools": "Function calling, Google Search grounding (5,000 free/mo, then $14/1K)", "reason": "Thinking (billed as output)", "res": "Not checked", "src": "https://ai.google.dev/gemini-api/docs/pricing", "src2": "https://ai.google.dev/gemini-api/docs/models", "note": "Implicit caching only. $2/$10 through Nov 30, 2026; $4/$20 from Dec 1.", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "flashlite35", "prov": "google", "name": "Gemini 3.5 Flash-Lite", "tier": "efficient", "in": 0.3, "out": 2.5, "cached": 0.03, "ctx": "1M", "batch": 50, "mm": "Text, image, video, audio, PDF in", "tools": "Function calling, search grounding, file search", "reason": "Thinking", "res": "Not checked", "src": "https://ai.google.dev/gemini-api/docs/pricing", "src2": "https://ai.google.dev/gemini-api/docs/models", "note": "Cache storage $1/1M tokens/hour.", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "nemosuper", "prov": "nvidia", "name": "Nemotron 3 Super 120B (AWS Bedrock)", "tier": "frontier", "in": 0.15, "out": 0.65, "cached": null, "ctx": "256K", "batch": 50, "mm": "Not verified", "tools": "Not verified", "reason": "Reasoning effort: none \u2192 high", "res": "AWS Bedrock, US East/West (other regions priced higher)", "src": "https://aws.amazon.com/bedrock/pricing/", "src2": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/us-east-1/index.json", "note": "Open weights. NVIDIA does not publish a per-token price; this is the AWS Bedrock on-demand (Standard tier) price in US East/West. No prompt-cache price listed. Same open weights can be self-hosted on NVIDIA GPUs (see the self-hosted option).", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "nemonano", "prov": "nvidia", "name": "Nemotron 3 Nano 30B (AWS Bedrock)", "tier": "efficient", "in": 0.06, "out": 0.24, "cached": null, "ctx": "256K", "batch": 50, "mm": "Not verified", "tools": "Not verified", "reason": "Reasoning effort: none \u2192 high", "res": "AWS Bedrock, US East/West (other regions priced higher)", "src": "https://aws.amazon.com/bedrock/pricing/", "src2": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/us-east-1/index.json", "note": "Open weights. NVIDIA does not publish a per-token price; this is the AWS Bedrock on-demand (Standard tier) price in US East/West. No prompt-cache price listed.", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "llama4mav", "prov": "meta", "name": "Llama 4 Maverick 17B (AWS Bedrock)", "tier": "frontier", "in": 0.24, "out": 0.97, "cached": null, "ctx": "1M", "batch": 50, "mm": "Text + image in", "tools": "Not verified", "reason": "No reasoning mode", "res": "AWS Bedrock, US East (N. Virginia)", "src": "https://aws.amazon.com/bedrock/pricing/", "src2": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/us-east-1/index.json", "note": "Open weights. AWS Bedrock on-demand price, US East (N. Virginia). Bedrock lists Llama 4 as Legacy (EOL Mar 30, 2027). No prompt-cache price listed.", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "llama4scout", "prov": "meta", "name": "Llama 4 Scout 17B (AWS Bedrock)", "tier": "efficient", "in": 0.17, "out": 0.66, "cached": null, "ctx": "10M", "batch": 50, "mm": "Text + image in", "tools": "Not verified", "reason": "No reasoning mode", "res": "AWS Bedrock, US East (N. Virginia)", "src": "https://aws.amazon.com/bedrock/pricing/", "src2": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/us-east-1/index.json", "note": "Open weights. AWS Bedrock on-demand price, US East (N. Virginia). Bedrock lists Llama 4 as Legacy (EOL Mar 30, 2027). No prompt-cache price listed.", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "mlarge4", "prov": "mistral", "name": "Mistral Large 4", "tier": "frontier", "in": 0.7, "out": 2.1, "cached": 0.07, "ctx": "1M", "batch": 50, "mm": "Text + image in", "tools": "Function calling, structured output", "reason": "General-purpose (MoE, 52B active)", "res": "Not checked", "src": "https://docs.mistral.ai/inference/pricing", "src2": "https://docs.mistral.ai/models/mistral-large-4-0", "note": "Open weights (Mistral Ecosystem Open Weight License). Batch API 50% off (docs.mistral.ai/inference/batch-processing).", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "msmall4", "prov": "mistral", "name": "Mistral Small 4", "tier": "efficient", "in": 0.15, "out": 0.6, "cached": 0.015, "ctx": "256K", "batch": 50, "mm": "Not verified", "tools": "Not verified", "reason": "Hybrid instruct / reasoning", "res": "Not checked", "src": "https://docs.mistral.ai/inference/pricing", "src2": "https://docs.mistral.ai/models/mistral-small-4-0-26-03", "note": "Open weights (Apache 2.0). Batch API 50% off (docs.mistral.ai/inference/batch-processing).", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "dsflash", "prov": "open", "name": "DeepSeek V4.1 Flash (open weights, via Together AI)", "tier": "efficient", "in": 0.3, "out": 1.2, "cached": 0.006, "ctx": "1M (model; host limit may differ)", "batch": 0, "mm": "Text + image in", "tools": "Tool calls", "reason": "Thinking / non-thinking modes", "res": "US-hosted provider, or self-host", "src": "https://www.together.ai/pricing", "src2": "https://api-docs.deepseek.com/quick_start/pricing", "last_checked": "2026-11-18T09:15:20-06:00", "last_changed": null, "status": "active"}, {"id": "selfhost", "prov": "open", "name": "Open-weight model, self-hosted on your GPUs", "tier": "any", "in": 0, "out": 0, "cached": null, "self": true, "ctx": "Depends on model", "batch": 0, "mm": "Depends on model", "tools": "You build/operate", "reason": "Depends on model", "res": "Full control: your cloud, colo or on-prem", "src": null, "note": "No per-token bill. Cost = GPUs + extra ops people (editable assumptions).", "last_checked": null}]}).then(d=>{
+  MODELS=d.models.filter(m=>m.status!=="retired");PRICE_META=d;
+  $("#priceHdr").textContent="Price list last verified: "+fmtCT(d.list_verified_at)+" · each model shows its own last-checked time";
+  init();document.querySelectorAll(".pdfbtn").forEach(b=>b.onclick=()=>exportPDF(b.dataset.v));
+}).catch(e=>{document.body.innerHTML="<p style='padding:40px'>Could not load price data ("+e.message+").</p>";});
+</script>
+</body>
+</html>

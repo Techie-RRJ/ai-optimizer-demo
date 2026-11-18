@@ -101,9 +101,9 @@ a{color:var(--brand)}
 </header>
 <div id="priceHdr" style="background:#fff3cd;color:#14213d;padding:6px 28px;font-size:.85rem;font-weight:600"></div>
 <nav id="nav">
-  <button data-s="inv">3 · AI Inventory</button>
-  <button data-s="read">1 · Preliminary Findings</button>
-  <button data-s="find">2 · Optimization Recommendations</button>
+  <button data-s="inv">1 · AI Inventory</button>
+  <button data-s="read">2 · Preliminary Findings</button>
+  <button data-s="find">3 · Optimization Recommendations</button>
   <button data-s="sw" class="hl">4 · Switch Providers ★</button>
   <button data-s="calc">5 · Model Calculator</button>
   <button data-s="src">6 · Sources &amp; Assumptions</button>
@@ -112,12 +112,12 @@ a{color:var(--brand)}
 
 <!-- 1 FINDINGS -->
 <section id="read">
-  <h2>1 · Preliminary Findings <span class="sample">Sample data</span> <button class="pdfbtn" data-v="read">Export to PDF</button></h2>
+  <h2>2 · Preliminary Findings <span class="sample">Sample data</span> <button class="pdfbtn" data-v="read">Export to PDF</button></h2>
   <div id="readEmpty" class="card emptystate" style="display:none">
     <div class="ei">📋</div>
-    <p class="et">Input data in the <a href="#inv" data-go="inv">3 · AI Inventory</a> tab in order to show your preliminary findings report.</p>
+    <p class="et">Input data in the <a href="#inv" data-go="inv">1 · AI Inventory</a> tab in order to show your preliminary findings report.</p>
     <p class="note" style="font-size:.9rem">The preliminary findings report (score, savings, Risks, Recommended Engagement and cost recovery) is computed from the workflows in the AI Inventory, priced with the editable assumptions in <a href="#src" data-go="src">6 · Sources &amp; Assumptions</a>. To bring back the sample company, use <b>Reload sample data</b> on the AI Inventory tab.</p>
-    <div class="btns" style="margin-top:10px"><button data-go="inv">Go to 3 · AI Inventory</button><button class="reloadSample">Reload sample data</button></div>
+    <div class="btns" style="margin-top:10px"><button data-go="inv">Go to 1 · AI Inventory</button><button class="reloadSample">Reload sample data</button></div>
   </div>
   <div id="readReport">
     <div class="orgbanner" style="background:#12355b;color:#fff;border-radius:10px;padding:16px 22px;margin:4px 0 16px"><div style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;opacity:.85">Preliminary findings report for</div><div style="font-size:2rem;font-weight:800;line-height:1.2">Larkspur Meridian Freight Group</div><div style="font-size:.85rem;opacity:.85">Fictional sample company · illustrative data</div></div>
@@ -177,14 +177,14 @@ a{color:var(--brand)}
 
 <!-- 2 OPTIMIZATION RECOMMENDATIONS -->
 <section id="find">
-  <h2>2 · Optimization recommendations <span class="sample">Sample data</span></h2>
+  <h2>3 · Optimization recommendations <span class="sample">Sample data</span></h2>
   <p class="lead">Each recommendation is computed with the Model Calculator using verified list prices. Green dollar figures are <b>savings</b> if you act on the recommendation (monthly, with the yearly total and the before → after monthly cost). Risks have no dollar value, but they block attribution and control. The Preliminary Findings tab rolls these up into the score, the top savings, the risks to close and the Recommended Engagement.</p>
   <div class="card" id="findList"></div>
 </section>
 
 <!-- 3 AI INVENTORY -->
 <section id="inv">
-  <h2>3 · See and attribute the AI you already run <span class="sample">Sample data — fictional company “Larkspur Meridian Freight Group”</span></h2>
+  <h2>1 · See and attribute the AI you already run <span class="sample">Sample data — fictional company “Larkspur Meridian Freight Group”</span></h2>
   <p class="lead">Before adding new endpoints, list every AI workflow, who owns it, which identity it runs as, and what it costs per <b>completed task</b>. Total Cost of AI (TCA) = tokens + compute/hosting + people/ops + governance/observability + idle agent compute.<span class="tip" tabindex="0" data-tip="A token is a small chunk of text (about ¾ of a word). Providers bill per million tokens read (input) and written (output). TCA adds everything else it takes to run the workflow safely.">i</span></p>
   <div class="btns" style="margin:0 0 12px"><button id="blankBtn">Start with blank data</button><button class="reloadSample">Reload sample data</button> <span class="note" id="dataState"></span></div>
   <div class="kpis" id="invKpis"></div>
@@ -364,7 +364,7 @@ function renderInv(){
 // DATA STATE (sample vs blank)
 const SAMPLE_WF=JSON.parse(JSON.stringify(WF));
 const hasData=()=>WF.length>0;
-const NODATA=`<div class="nodata">No workflows yet. Input data in the <a href="#inv" data-go="inv">3 · AI Inventory</a> tab, or use <b>Reload sample data</b> there.</div>`;
+const NODATA=`<div class="nodata">No workflows yet. Input data in the <a href="#inv" data-go="inv">1 · AI Inventory</a> tab, or use <b>Reload sample data</b> there.</div>`;
 function fillWfSelects(){const opts=WF.map(w=>`<option value="${w.id}">${w.name}</option>`).join("");$("#swWf").innerHTML=opts;$("#cWf").innerHTML=opts;if(hasData()){$("#swWf").value=WF.some(w=>w.id==="cs")?"cs":WF[0].id;$("#cWf").value=WF[0].id;}}
 function setData(list){WF.splice(0,WF.length,...JSON.parse(JSON.stringify(list)));fillWfSelects();if(hasData()){swDefaults();loadCalcWf();}renderAll(false);}
 
@@ -535,7 +535,7 @@ function exportPDF(view){
     for(let i=0;i<g.length;i+=n){const r=g.slice(i,i+n);h+="<tr>"+r.map((c,j)=>{let x=c.cloneNode(true);x.querySelectorAll("select").forEach(se=>{const sp=document.createElement("b");sp.textContent=se.options[se.selectedIndex].text;se.replaceWith(sp);});return (i===0||j===0?"<th>":"<td>")+x.innerHTML+(i===0||j===0?"</th>":"</td>");}).join("")+"</tr>";}
     body=`<p><b>${$("#swCurrent").innerText}</b></p><table>${h}</table>`;}
   if(view==="calc")body=`<p><b>Workflow:</b> ${$("#cWf").selectedOptions[0].text} · ${(+$("#cVol").value).toLocaleString()} tasks/month · ${$("#cIn").value} input / ${$("#cOut").value} output tokens per task · cacheable ${$("#cCache").value}% · completion ${$("#cDone").value}% · batch ${$("#cBatch").checked?"on":"off"}</p><table>${$("#cTable").innerHTML}</table>`;
-  if(view==="read"&&!hasData())body=`<p>Input data in the 3 · AI Inventory tab in order to show your preliminary findings report.</p>`;
+  if(view==="read"&&!hasData())body=`<p>Input data in the 1 · AI Inventory tab in order to show your preliminary findings report.</p>`;
   else if(view==="read"){const eng=$("#engage").cloneNode(true);body=`<p style="font-size:14pt"><b>Tokenomics maturity score: ${$("#scoreN").textContent}/100</b></p><div>${[...document.querySelectorAll("#readKpis .kpi")].map(k=>k.innerText.replace(/\n/g,": ")).join(" · ")}</div><h3>Top 3 savings</h3><table>${$("#top3").innerHTML}</table><h3>Risks to remediate</h3><table>${$("#riskList").innerHTML}</table><div class="eng" style="page-break-before:always">${eng.innerHTML}</div><div class="eng" style="page-break-before:always">${$("#recover").innerHTML}</div>`;}
   const fn=cols(view).filter(Boolean).map(m=>m.self?`<li>${m.name}: no token price; hosting, GPU and ops figures are editable assumptions.</li>`:`<li>Price for ${m.name} last verified ${fmtCT(m.last_checked)}${m.last_changed?` (last changed ${fmtD(m.last_changed)})`:""}. Source: ${m.src}</li>`).join("");
   const title={sw:"Provider switch comparison",calc:"Workflow / model cost comparison",read:"AI Optimizer: Preliminary Findings and Recommended Engagement"}[view];
